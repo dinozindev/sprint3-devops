@@ -4,6 +4,9 @@ WORKDIR /app
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
 
+# usuário não root
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
+
 # Build
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
@@ -20,4 +23,8 @@ RUN dotnet publish "Sprint3-API.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+USER appuser
+
 ENTRYPOINT ["dotnet", "Sprint3-API.dll"]
+
