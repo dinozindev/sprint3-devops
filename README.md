@@ -56,6 +56,16 @@ cd sprint3-devops
 
 ### Abra o seu Docker Desktop para que seja possível fazer o build-push da imagem da API
 
+### Faça o Login na Azure:
+```bash
+az login
+```
+
+### Registre o resource provider do PostgreSQL dentro da sua subscription no Azure:
+```bash
+az provider register --namespace Microsoft.DBforPostgreSQL
+```
+
 ### Execute o script de criação do servidor PostgreSQL em nuvem:
 ```bash
 ./criar-server.sh
