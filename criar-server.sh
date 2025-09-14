@@ -8,10 +8,6 @@ POSTGRES_USER="adminuser"
 POSTGRES_PASSWORD="adminpassword"
 ACR_NAME="acr-api-mottu-mottion"
 
-# Registrar provider do PostgreSQL
-echo "Registrando provider Microsoft.DBforPostgreSQL..."
-az provider register --namespace Microsoft.DBforPostgreSQL
-
 az group create --name $RESOURCE_GROUP --location $LOCATION
 
 az postgres flexible-server create \
