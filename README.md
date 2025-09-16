@@ -113,6 +113,11 @@ http://mottu-mottion-api.brazilsouth.azurecontainer.io:8080/
 http://mottu-mottion-api.brazilsouth.azurecontainer.io:8080/scalar
 ```
 
+### Para testar os endpoints de Cliente por meio de um script, execute:
+```bash
+./teste-endpoints.sh
+```
+
 ## Rotas da API para teste (Cliente)
 
 ### Parâmetros de Rotas Paginadas
