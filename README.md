@@ -94,7 +94,7 @@ az provider register --namespace Microsoft.DBforPostgreSQL
 ./build-e-deploy.sh
 ```
 
-### Para acessar a API (Scalar), utilize o FQDN do Container: 
+### Para acessar a API (Swagger), utilize o FQDN do Container: 
 ```bash
 http://mottu-mottion-api.brazilsouth.azurecontainer.io:8080/
 ```
@@ -110,7 +110,7 @@ http://mottu-mottion-api.brazilsouth.azurecontainer.io:8080/
 
 ### Para acessar a documentação da aplicação: 
 ```bash
-http://mottu-mottion-api.brazilsouth.azurecontainer.io:8080/scalar
+http://mottu-mottion-api.brazilsouth.azurecontainer.io:8080/swagger
 ```
 
 ### Para testar os endpoints de Cliente por meio de um script, execute:
