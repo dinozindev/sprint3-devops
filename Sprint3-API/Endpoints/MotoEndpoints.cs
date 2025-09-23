@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel;
 using Sprint3_API.Dtos;
-using Sprint3_API.Models;
 using Sprint3_API.Services;
-
+using Swashbuckle.AspNetCore.Filters;
 namespace Sprint3_API.Endpoints;
 
 public static class MotoEndpoints
@@ -17,10 +16,13 @@ public static class MotoEndpoints
             .Produces<PagedResponse<MotoReadDto>>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status500InternalServerError);
-        
-        motos.MapGet("/{id:int}", async ([Description("Identificador único de Moto")] int id, MotoService service) => await service.GetMotoByIdAsync(id))
+
+        motos.MapGet("/{id:int}",
+                async ([Description("Identificador único de Moto")] int id, MotoService service) =>
+                await service.GetMotoByIdAsync(id))
             .WithSummary("Retorna uma moto pelo ID")
-            .WithDescription("Retorna uma moto pelo ID. Retorna 200 OK se a moto for encontrada, ou erro se não for achada.")
+            .WithDescription(
+                "Retorna uma moto pelo ID. Retorna 200 OK se a moto for encontrada, ou erro se não for achada.")
             .Produces<ResourceResponse<MotoReadDto>>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status500InternalServerError);
@@ -38,11 +40,11 @@ public static class MotoEndpoints
             .Produces<ResourceResponse<UltimaPosicaoDto>>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status500InternalServerError);
-        
+
         motos.MapPost("/", async (MotoPostDto dto, MotoService service) => await service.CreateMotoAsync(dto))
             .Accepts<MotoPostDto>("application/json")
             .WithSummary("Cria uma moto")
-            .WithDescription("Cria uma moto no sistema.")
+            .WithDescription("Cria uma nova moto no sistema.")
             .Produces<ResourceResponse<MotoReadDto>>(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status409Conflict)

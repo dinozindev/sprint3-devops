@@ -1,4 +1,7 @@
+using System.Text.Json;
 using System.Threading.RateLimiting;
+using Asp.Versioning;
+using DotNetEnv;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
@@ -6,7 +9,25 @@ using Sprint3_API;
 using Sprint3_API.Endpoints;
 using Sprint3_API.Services;
 
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "API Mottu Mottion",
+        Version = "v1",
+        Description = "Uma API para gerenciamento dos pátios da Mottu"
+    });
+
+    options.ExampleFilters();
+});
+
+builder.Services.AddSwaggerExamplesFromAssemblyOf<Program>();
 
 builder.Services.AddDbContext<AppDbContext>(options => 
     options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreConnection")));
@@ -21,7 +42,6 @@ builder.Services.AddScoped<VagaService>();
 builder.Services.AddScoped<SetorService>();
 builder.Services.AddScoped<MovimentacaoService>();
 
-// define um limite de requisições durante um determinado período.
 builder.Services.AddRateLimiter(options =>
 {
     options.AddFixedWindowLimiter("fixed", opt =>
@@ -33,12 +53,6 @@ builder.Services.AddRateLimiter(options =>
     });
 });
 
-builder.Services.AddOpenApi();
-
-// trigga uma exceção caso haja uma.
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-// adiciona o CORS na aplicação
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(opt =>
@@ -48,6 +62,11 @@ builder.Services.AddCors(options =>
         opt.AllowAnyHeader();
         opt.WithExposedHeaders("Content-Type", "Accept");
     });
+});
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 });
 
 builder.Services.AddSignalR();
@@ -75,47 +94,39 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-//  habilita o CORS
 app.UseCors();
-// limita a qtnd de requisições
+
 app.UseRateLimiter();
 
 app.MapHub<SetorHub>("/hub/setores");
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
-    app.MapScalarApiReference();
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "API Mottu Mottion v1");
+    });
 }
 
-app.MapOpenApi();
-app.MapScalarApiReference();
+app.UseSwagger();
+app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "API Mottu Mottion v1");
+    });
 
-// endpoints de Cliente
+var apiVersionSet = app.NewApiVersionSet()
+    .HasApiVersion(new ApiVersion(1))
+    .Build();
+
 app.MapClienteEndpoints();
-
-// endpoints de Moto
 app.MapMotoEndpoints();
-
-// endpoints de Pátio
 app.MapPatioEndpoints();
-
-// endpoints de Cargo
 app.MapCargoEndpoints();
-
-// endpoints de Funcionário
 app.MapFuncionarioEndpoints();
-
-// endpoints de Gerente
 app.MapGerenteEndpoints();
-
-// endpoints de Vaga
 app.MapVagaEndpoints();
-
-// endpoints de Setor
 app.MapSetorEndpoints();
-
-// endpoints de Movimentação
 app.MapMovimentacaoEndpoints();
 
 await app.RunAsync();
